@@ -14,6 +14,7 @@ class Forecast{
     private var _minTemp: String!
     private var _date: String!
     private var _weatherType:String!
+    private var _icon:String!
     
     var maxTemp:String{
         if _maxTemp == nil{
@@ -39,22 +40,29 @@ class Forecast{
         }
         return _weatherType
     }
+    var icon:String{
+        if _icon == nil{
+            _icon = ""
+        }
+        return _icon
+    }
     init(weatherDict: Dictionary<String, AnyObject> ) {
-        if let temp = weatherDict["temp"] as? Dictionary<String, AnyObject>{
-            if let min = temp["min"] as? Double{
-                self._minTemp = "\(Int(min - 273.15))°"
-                print(self._minTemp!)
+        if let low_temp = weatherDict["low_temp"] as? Double{
+            self._minTemp = "\(Int(low_temp))°"
+            print(self._minTemp!)
+        }
+        if let max_temp = weatherDict["max_temp"] as? Double{
+            self._maxTemp = "\(Int(max_temp))°"
+        }
+        if let weather = weatherDict["weather"] as? Dictionary<String, AnyObject>{
+            if let description = weather["description"] as? String{
+                self._weatherType = description.capitalized
             }
-            if let max = temp["max"] as? Double{
-                self._maxTemp = "\(Int(max - 273.15))°"
+            if let icon = weather["icon"] as? String{
+                self._icon = icon
             }
         }
-        if let weather = weatherDict["weather"] as? [Dictionary<String, AnyObject>]{
-            if let main = weather[0]["main"] as? String{
-                self._weatherType = main
-            }
-        }
-        if let date = weatherDict["dt"] as? Double{
+        if let date = weatherDict["ts"] as? Double{
             let unixDateFormat = Date(timeIntervalSince1970: date)
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "EEEE"

@@ -12,4 +12,5 @@ class Location{
     init(){}
     var lat:Double!
     var long:Double!
+    var cityName:String!
 }

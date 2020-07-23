@@ -18,7 +18,7 @@ class HourlyWeatherCell: UICollectionViewCell {
         //hourlyForecast = HourlyForecast()
         TimeLabel.text = hourlyForecast.hour
         HourlyTemp.text = hourlyForecast.temp
-        HourlyWeatherImage.image = UIImage(named: "\(hourlyForecast.weatherType)")
+        HourlyWeatherImage.image = UIImage(named: "\(hourlyForecast.icon)")
     }
     
 }

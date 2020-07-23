@@ -8,27 +8,35 @@
 
 import UIKit
 import Alamofire
-import SwiftyJSON
 import CoreLocation
 typealias protocols = UITableViewDelegate & UITableViewDataSource & UICollectionViewDelegate & UICollectionViewDataSource & UISearchBarDelegate & CLLocationManagerDelegate
 class WeatherVC: UIViewController, protocols {
+    //IBoutlets
+    @IBOutlet weak var CLLocationBTN: UIButton!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var weatherSearchBar: UISearchBar!
     @IBOutlet weak var DateLBL: UILabel!
     @IBOutlet weak var CurrentTemp: UILabel!
     @IBOutlet weak var LocationName: UILabel!
     @IBOutlet weak var WeatherImage: UIImageView!
     @IBOutlet weak var WeatherType: UILabel!
     
+    //variables
+    var inSearchMode = false
     var currentWeather:CurrentWeather!
     var dailyWeather = [Forecast]()
+    var SBdailyWeather = [Forecast]()
+    var SBhourlyWeather = [HourlyForecast]()
     var hourlyWeather = [HourlyForecast]()
     let locationManager = CLLocationManager()
     var currentLocation:CLLocation!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        CLLocationBTN.layer.cornerRadius = 13.0
+        weatherSearchBar.delegate = self
+        weatherSearchBar.returnKeyType = UIReturnKeyType.done
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
@@ -53,25 +61,49 @@ class WeatherVC: UIViewController, protocols {
             locationAuth()
         }
     }
+
+    //These function are for search bar
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if inSearchMode == false{
+            inSearchMode = true
+            let lowerCase = weatherSearchBar.text!.lowercased()
+            Location.shareInstance.cityName = lowerCase
+            downloadCurrentWeatherDataForSB()
+            view.endEditing(true)
+        }else {
+            inSearchMode = false
+            locationAuth()
+            tableView.reloadData()
+            collectionView.reloadData()
+        }
+    }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
+    }
+    
+    
+    //these function are for downloading weather data
     func DownloadCurrentWeatherData(){
         weatherDate()
         DownloadHourlyWeatherData()
         DownloadDailyWeatherData()
         AF.request(currentWeatherURL).responseJSON{response in
             if let dict = response.value as? Dictionary<String, AnyObject>{
-                if let main = dict["main"] as? Dictionary<String, AnyObject>{
-                    if let temp = main["temp"] as? Double{
-                        self.CurrentTemp.text = "\(Int(temp - 273.15))°C"
+                if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
+                    if let temp = data[0]["temp"] as? Double{
+                        self.CurrentTemp.text = "\(Int(temp))°C"
                     }
-                }
-                if let weather = dict["weather"] as? [Dictionary<String, AnyObject>]{
-                    if let main = weather[0]["main"] as? String{
-                        self.WeatherType.text = main.capitalized
-                        self.WeatherImage.image = UIImage(named: main)
+                    if let weather = data[0]["weather"] as? Dictionary<String, AnyObject>{
+                        if let description = weather["description"] as? String{
+                            self.WeatherType.text = description.capitalized
+                        }
+                        if let icon = weather["icon"] as? String{
+                            self.WeatherImage.image = UIImage(named: icon)
+                        }
                     }
-                }
-                if let name = dict["name"] as? String{
-                    self.LocationName.text = name.capitalized
+                    if let name = data[0]["city_name"] as? String{
+                        self.LocationName.text = name.capitalized
+                    }
                 }
             }
         }
@@ -79,8 +111,8 @@ class WeatherVC: UIViewController, protocols {
     func DownloadDailyWeatherData(){
         AF.request(DailyWeatherURL).responseJSON{response in
             if let dict = response.value as? Dictionary<String, AnyObject>{
-                if let list = dict["list"] as? [Dictionary<String, AnyObject>]{
-                    for obj in list{
+                if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
+                    for obj in data{
                         let forecast = Forecast(weatherDict: obj)
                         self.dailyWeather.append(forecast)
                     }
@@ -92,10 +124,64 @@ class WeatherVC: UIViewController, protocols {
     func DownloadHourlyWeatherData(){
         AF.request(HourlyWeatherURL).responseJSON{response in
             if let dict = response.value as? Dictionary<String, AnyObject>{
-                if let list = dict["list"] as? [Dictionary<String, AnyObject>]{
-                    for obj in list{
+                if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
+                    for obj in data{
                         let hourlyForecast = HourlyForecast(hourlyWeatherDict: obj)
                         self.hourlyWeather.append(hourlyForecast)                     
+                    }
+                    
+                    self.collectionView.reloadData()
+                }
+            }
+        }
+    }
+    
+    //these function are for downloading weather data for search bar
+    func downloadCurrentWeatherDataForSB(){
+        weatherDate()
+        downloadForecastForSearchBar()
+        downloadHourlyForSearchBar()  
+        AF.request(SBCurrentDataURL).responseJSON{response in
+            if let dict = response.value as? Dictionary<String, AnyObject>{
+                if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
+                    if let temp = data[0]["temp"] as? Double{
+                        self.CurrentTemp.text = "\(Int(temp))°C"
+                    }
+                    if let weather = data[0]["weather"] as? Dictionary<String, AnyObject>{
+                        if let description = weather["description"] as? String{
+                            self.WeatherType.text = description.capitalized
+                        }
+                        if let icon = weather["icon"] as? String{
+                            self.WeatherImage.image = UIImage(named: icon)
+                        }
+                    }
+                    if let name = data[0]["city_name"] as? String{
+                        self.LocationName.text = name.capitalized
+                    }
+                }
+            }
+        }
+    }
+    func downloadForecastForSearchBar(){
+        AF.request(searchBarForecastURL).responseJSON{response in
+            if let dict = response.value as? Dictionary<String, AnyObject>{
+                if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
+                    for obj in data{
+                        let forecast = Forecast(weatherDict: obj)
+                        self.SBdailyWeather.append(forecast)
+                    }
+                    self.tableView.reloadData()
+                }
+            }
+        }
+    }
+    func downloadHourlyForSearchBar(){
+        AF.request(searchBarHourlyURL).responseJSON{response in
+            if let dict = response.value as? Dictionary<String, AnyObject>{
+                if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
+                    for obj in data{
+                        let hourlyForecast = HourlyForecast(hourlyWeatherDict: obj)
+                        self.SBhourlyWeather.append(hourlyForecast)
                     }
                     
                     self.collectionView.reloadData()
@@ -110,7 +196,8 @@ class WeatherVC: UIViewController, protocols {
         let currentDate = dateFormatter.string(from: Date())
         self.DateLBL.text = "Today, \(currentDate)"
     }
-
+    
+    //these function are for table view
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dailyWeather.count
     }
@@ -119,21 +206,34 @@ class WeatherVC: UIViewController, protocols {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "DailyWeatherCell") as? DailyWeatherCell{
-            let forecast = dailyWeather[indexPath.row]
-            cell.updateCell(forecast: forecast)
-            
+            if inSearchMode == true{
+                let forecast = SBdailyWeather[indexPath.row]
+                cell.updateCell(forecast: forecast)
+            }else{
+                inSearchMode = false
+                let forecast = dailyWeather[indexPath.row]
+                cell.updateCell(forecast: forecast)
+            }
             return cell
         }else {
             return UITableViewCell()
         }
     }
+    
+    //these are for collection view
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HourlyWeatherCell", for: indexPath) as? HourlyWeatherCell{
-            let hourlyForecast = hourlyWeather[indexPath.row]
-            cell.updateHourCell(hourlyForecast: hourlyForecast)
+            if inSearchMode == true{
+                let hourlyForecast = SBhourlyWeather[indexPath.row]
+                cell.updateHourCell(hourlyForecast: hourlyForecast)
+            }else{
+                inSearchMode = false
+                let hourlyForecast = hourlyWeather[indexPath.row]
+                cell.updateHourCell(hourlyForecast: hourlyForecast)
+            }
             return cell
         }else{
             return UICollectionViewCell()
@@ -142,4 +242,11 @@ class WeatherVC: UIViewController, protocols {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return hourlyWeather.count
     }
+    @IBAction func CLWeather(_ sender: UIButton) {
+        locationAuth()
+        inSearchMode = false
+    }
+    
+    
+    
 }

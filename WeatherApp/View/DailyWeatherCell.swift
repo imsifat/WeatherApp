@@ -20,7 +20,7 @@ class DailyWeatherCell: UITableViewCell {
     func updateCell(forecast: Forecast){
         DayOfTheWeak.text = forecast.date
         DailyWeatherType.text = forecast.weatherType
-        DailyWeatherImage.image = UIImage(named: "\(forecast.weatherType)")
+        DailyWeatherImage.image = UIImage(named: "\(forecast.icon)")
         MaxTemp.text = forecast.maxTemp
         MinTemp.text = forecast.minTemp
     }

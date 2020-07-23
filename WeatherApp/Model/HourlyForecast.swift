@@ -12,6 +12,7 @@ class HourlyForecast{
     private var _hour: String!
     private var _temp: String!
     private var _weatherType:String!
+    private var _icon:String!
     
     var hour: String{
         if _hour == nil{
@@ -31,13 +32,17 @@ class HourlyForecast{
         }
         return _weatherType
     }
-    init(hourlyWeatherDict: Dictionary<String, AnyObject>) {
-        if let main = hourlyWeatherDict["main"] as? Dictionary<String, AnyObject>{
-            if let temp = main["temp"] as? Double{
-                self._temp = "\(Int(temp - 273))°"
-            }
+    var icon:String{
+        if _icon == nil{
+            _icon = ""
         }
-        if let date = hourlyWeatherDict["dt"] as? Double{
+        return _icon
+    }
+    init(hourlyWeatherDict: Dictionary<String, AnyObject>) {
+        if let temp = hourlyWeatherDict["temp"] as? Double{
+            self._temp = "\(Int(temp))°"
+        }
+        if let date = hourlyWeatherDict["ts"] as? Double{
             let unixTimeFormat = Date(timeIntervalSince1970: date)
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "h a"
@@ -45,9 +50,12 @@ class HourlyForecast{
             dateFormatter.dateStyle = .none
             self._hour = unixTimeFormat.HourFormat()
         }
-        if let weather = hourlyWeatherDict["weather"] as? [Dictionary<String, AnyObject>]{
-            if let main = weather[0]["main"] as? String{
-                self._weatherType = main.capitalized
+        if let weather = hourlyWeatherDict["weather"] as? Dictionary<String, AnyObject>{
+            if let description = weather["description"] as? String{
+                self._weatherType = description.capitalized
+            }
+            if let icon = weather["icon"] as? String{
+                self._icon = icon
             }
         }
     }
