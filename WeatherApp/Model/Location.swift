@@ -7,10 +7,5 @@
 //
 
 import CoreLocation
-class Location{
-    static var shareInstance = Location()
-    init(){}
     var lat:Double!
     var long:Double!
-    var cityName:String!
-}

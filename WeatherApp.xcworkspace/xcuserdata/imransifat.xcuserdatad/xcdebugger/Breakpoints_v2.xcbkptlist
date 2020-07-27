@@ -3,4 +3,102 @@
    uuid = "0A805725-6910-454C-B1F9-0738BA534F35"
    type = "0"
    version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "08716F01-E0CE-45C2-B061-B1F00FB5F0DA"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "WeatherApp/Controller/WeatherVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "175"
+            endingLineNumber = "175"
+            landmarkName = "downloadForecastForSearchBar()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "08716F01-E0CE-45C2-B061-B1F00FB5F0DA - 20347becf167c43"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "WeatherApp.WeatherVC.downloadForecastForSearchBar() -&gt; ()"
+                  moduleName = "WeatherApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/imransifat/Desktop/IOS%20App%20Development/App/WeatherApp/WeatherApp/Controller/WeatherVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "183"
+                  endingLineNumber = "183"
+                  offsetFromSymbolStart = "1012">
+               </Location>
+               <Location
+                  uuid = "08716F01-E0CE-45C2-B061-B1F00FB5F0DA - e3320f599d6e4583"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Alamofire.DataResponse&lt;Any, Alamofire.AFError&gt;) -&gt; () in WeatherApp.WeatherVC.downloadForecastForSearchBar() -&gt; ()"
+                  moduleName = "WeatherApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/imransifat/Desktop/IOS%20App%20Development/App/WeatherApp/WeatherApp/Controller/WeatherVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "184"
+                  endingLineNumber = "184"
+                  offsetFromSymbolStart = "142">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "51740AA3-DEF6-4C29-8E1E-707FF2943141"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "WeatherApp/Controller/WeatherVC.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "190"
+            endingLineNumber = "190"
+            landmarkName = "downloadHourlyForSearchBar()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "51740AA3-DEF6-4C29-8E1E-707FF2943141 - 36abe4f9449b66b9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "WeatherApp.WeatherVC.downloadHourlyForSearchBar() -&gt; ()"
+                  moduleName = "WeatherApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/imransifat/Desktop/IOS%20App%20Development/App/WeatherApp/WeatherApp/Controller/WeatherVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "198"
+                  endingLineNumber = "198"
+                  offsetFromSymbolStart = "1012">
+               </Location>
+               <Location
+                  uuid = "51740AA3-DEF6-4C29-8E1E-707FF2943141 - 731a2e0114471fdb"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Alamofire.DataResponse&lt;Any, Alamofire.AFError&gt;) -&gt; () in WeatherApp.WeatherVC.downloadHourlyForSearchBar() -&gt; ()"
+                  moduleName = "WeatherApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/imransifat/Desktop/IOS%20App%20Development/App/WeatherApp/WeatherApp/Controller/WeatherVC.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "199"
+                  endingLineNumber = "199"
+                  offsetFromSymbolStart = "142">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
 </Bucket>

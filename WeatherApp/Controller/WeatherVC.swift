@@ -31,6 +31,7 @@ class WeatherVC: UIViewController, protocols {
     var hourlyWeather = [HourlyForecast]()
     let locationManager = CLLocationManager()
     var currentLocation:CLLocation!
+    var cityNames = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,25 +54,25 @@ class WeatherVC: UIViewController, protocols {
     func locationAuth(){
         if CLLocationManager.authorizationStatus() == .authorizedWhenInUse{
             currentLocation = locationManager.location
-            Location.shareInstance.lat = currentLocation.coordinate.latitude
-            Location.shareInstance.long = currentLocation.coordinate.longitude
+            lat = currentLocation.coordinate.latitude
+            long = currentLocation.coordinate.longitude
             DownloadCurrentWeatherData()
         }else{
             locationManager.requestWhenInUseAuthorization()
             locationAuth()
         }
     }
-
+    
     //These function are for search bar
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if inSearchMode == false{
             inSearchMode = true
-            let lowerCase = weatherSearchBar.text!.lowercased()
-            Location.shareInstance.cityName = lowerCase
+            cityNames = weatherSearchBar.text!.lowercased()
             downloadCurrentWeatherDataForSB()
             view.endEditing(true)
         }else {
             inSearchMode = false
+            cityNames = ""
             locationAuth()
             tableView.reloadData()
             collectionView.reloadData()
@@ -80,7 +81,6 @@ class WeatherVC: UIViewController, protocols {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
     }
-    
     
     //these function are for downloading weather data
     func DownloadCurrentWeatherData(){
@@ -136,12 +136,19 @@ class WeatherVC: UIViewController, protocols {
         }
     }
     
+    func getUrl(cityName: String) -> String{
+        let url = "https://api.weatherbit.io/v2.0/current?&city=\(cityName ))&key=19fb7003ac214daca9c83c24419869aa"
+        return url
+    }
+    
     //these function are for downloading weather data for search bar
     func downloadCurrentWeatherDataForSB(){
         weatherDate()
         downloadForecastForSearchBar()
-        downloadHourlyForSearchBar()  
-        AF.request(SBCurrentDataURL).responseJSON{response in
+        downloadHourlyForSearchBar()
+        let url = "https://api.weatherbit.io/v2.0/current?&city=\(cityNames.replacingOccurrences(of: " ", with: "%20") ))&key=19fb7003ac214daca9c83c24419869aa"
+        print(url)
+        AF.request(url).responseJSON{response in
             if let dict = response.value as? Dictionary<String, AnyObject>{
                 if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
                     if let temp = data[0]["temp"] as? Double{
@@ -163,6 +170,8 @@ class WeatherVC: UIViewController, protocols {
         }
     }
     func downloadForecastForSearchBar(){
+        let searchBarForecastURL = "https://api.weatherbit.io/v2.0/forecast/daily?&city=\(cityNames.replacingOccurrences(of: " ", with: "%20"))&key=19fb7003ac214daca9c83c24419869aa"
+        print(searchBarForecastURL)
         AF.request(searchBarForecastURL).responseJSON{response in
             if let dict = response.value as? Dictionary<String, AnyObject>{
                 if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
@@ -176,6 +185,8 @@ class WeatherVC: UIViewController, protocols {
         }
     }
     func downloadHourlyForSearchBar(){
+        let searchBarHourlyURL = "https://api.weatherbit.io/v2.0/forecast/hourly?&city=\(cityNames.replacingOccurrences(of: " ", with: "%20"))&key=19fb7003ac214daca9c83c24419869aa&hours=24"
+        print(searchBarHourlyURL)
         AF.request(searchBarHourlyURL).responseJSON{response in
             if let dict = response.value as? Dictionary<String, AnyObject>{
                 if let data = dict["data"] as? [Dictionary<String, AnyObject>]{
@@ -245,6 +256,8 @@ class WeatherVC: UIViewController, protocols {
     @IBAction func CLWeather(_ sender: UIButton) {
         locationAuth()
         inSearchMode = false
+        cityNames = ""
+        weatherSearchBar.text = "";
     }
     
     
